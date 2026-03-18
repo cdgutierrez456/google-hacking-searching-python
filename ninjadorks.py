@@ -7,7 +7,7 @@ from googlesearch import GoogleSearch
 
 def env_config():
     """Configurar el archivo .env con los valores proporcionados"""
-    api_key = input("Introduce tu API_KEY de Google")
+    api_key = input("Introduce tu API_KEY de SerAPI: ")
     set_key(".env", "API_KEY_SERPAPI", api_key)
 
 def main(query, configure_env, start_page, pages, lang):
@@ -24,11 +24,17 @@ def main(query, configure_env, start_page, pages, lang):
     # Leemos la clave API
     API_KEY_SERPAPI = os.getenv('API_KEY_SERPAPI')
 
-    query = 'filetype:sql "MySQL dump" (pass|password|passwd|pwd)'
+    if not query:
+        print("Indica una consulta con el comando -q. Utiliza el comando -h para mostrar la ayuda")
+        sys.exit(1)
 
     gsearch = GoogleSearch(API_KEY_SERPAPI)
 
-    results = gsearch.search(query)
+    results = gsearch.search(query,
+                             start_page=start_page,
+                             pages=pages,
+                             lang=lang)
+
 
     print(results)
 
