@@ -13,6 +13,8 @@ dist/
 build/
 .eggs/
 
+.conda
+
 # Virtual environments
 venv/
 env/

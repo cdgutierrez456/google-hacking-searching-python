@@ -1,0 +1,52 @@
+[
+    {
+        "title": "controlescolar.sql · master · Alejandro Mauricio González ...",
+        "description": "1. -- MySQL dump 10.13 Distrib 5.7.19, for macos10.12 (x86_64) ; 2. -- ; 3. -- Host: localhost Database: controlescolar ; 4. -- ------------------- ...",
+        "link": "https://gitlab-ingsoftware.uaz.edu.mx/amgdark/controlescolar/-/blob/master/controlescolar.sql"
+    },
+    {
+        "title": "oxusmedia/webapp-skeleton-admin @ 2.1.0 - Gogs",
+        "description": "-- MySQL dump 10.13 Distrib 5.7.28, for Linux (x86_64) · -- · -- Host: localhost Database: webApp · -- ------------------------------------------------------ · -- ...",
+        "link": "https://gogs.oxusmedia.com/oxusmedia/webapp-skeleton-admin/src/2.1.0/db.sql"
+    },
+    {
+        "title": "Parroquia_Guadalupe/Database backup/Script Inicial.sql ...",
+        "description": "Download raw file. Open symbols panel. Edit and raw actions. -- MySQL dump 10.13 Distrib 5.5.9, for Win32 (x86) -- -- Host: localhost Database: guadalupe ...",
+        "link": "https://github.com/amontenegro/Parroquia_Guadalupe/blob/master/Database%20backup/Script%20Inicial.sql"
+    },
+    {
+        "title": "https://raw.githubusercontent.com/grycap/im/devel/...",
+        "description": "-- MySQL dump 10.13 Distrib 5.7.27, for Linux (x86_64) -- -- Host: 172.17 ... password = \\'Tututu+01\\' and\\\\\\\\ndisk.0.os.name = \\'linux\\' and\\\\\\\\ndisk.0.os.",
+        "link": "https://raw.githubusercontent.com/grycap/im/devel/test/loadtest/data.sql"
+    },
+    {
+        "title": "sirec/archivoDump.sql · master · entidadpublicas / sirec",
+        "description": "... MySQL dump 10.8. --. -- Host: localhost Database: tts ... password` varchar(30) default NULL,. `id_nodo` int(11) NOT NULL default '0 ...",
+        "link": "https://gitlab.softwarelibre.gob.bo/entidadpublicas/sirec/-/blob/master/sirec/archivoDump.sql?ref_type=heads"
+    },
+    {
+        "title": "simulacion_cajeros - bdCajeros.sql - Minka",
+        "description": "1. CREATE DATABASE IF NOT EXISTS `cajeros_automatico` /*!40100 DEFAULT CHARACTER SET latin1 */; ; 2. USE `cajeros_automatico`; ; 3. -- MySQL dump ...",
+        "link": "https://minka.gob.ec/6to_simulacion_cajeros/simulacion_cajeros/blob/b4c1a7b8092d3a81bf3859cf623758b902c3eeb2/bdCajeros.sql"
+    },
+    {
+        "title": "redcomand/elections_mayor_respaldo.sql at master",
+        "description": "Download raw file. Open symbols panel. Edit and raw actions. -- MySQL dump 10.13 Distrib 5.7.19, for Linux (x86_64) -- -- Host: localhost Database: ...",
+        "link": "https://github.com/dexternidia/redcomand/blob/master/elections_mayor_respaldo.sql"
+    },
+    {
+        "title": "bolsatrabajo/database/bolsa_dump.sql at master",
+        "description": "Download raw file. Open symbols panel. Edit and raw actions. -- MySQL dump 10.13 Distrib 5.1.51, for Win32 (ia32) -- -- Host: localhost Database: bolsa ...",
+        "link": "https://github.com/ChileAgil/bolsatrabajo/blob/master/database/bolsa_dump.sql"
+    },
+    {
+        "title": "cge/statics/dataBase/cge_db211013.sql at master",
+        "description": "Open symbols panel. Edit and raw actions. -- MySQL dump 10.13 Distrib 5.5.20, for debian-linux-gnu (x86_64) -- -- Host: localhost Database: cge_db ...",
+        "link": "https://github.com/brass3a4/cge/blob/master/statics/dataBase/cge_db211013.sql"
+    },
+    {
+        "title": "rnc_app/db/backup_rncdb.sql at master",
+        "description": "Download raw file. Open symbols panel. Edit and raw actions. -- MySQL dump 10.13 Distrib 5.5.34, for Linux (x86_64) -- -- Host: localhost Database: rnc_db ...",
+        "link": "https://github.com/SIB-Colombia/rnc_app/blob/master/db/backup_rncdb.sql"
+    }
+]

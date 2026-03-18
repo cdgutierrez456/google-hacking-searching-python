@@ -1,4 +1,5 @@
 from dotenv import load_dotenv, set_key
+from results_parser import ResultsParser
 import argparse
 import sys
 import os
@@ -10,7 +11,7 @@ def env_config():
     api_key = input("Introduce tu API_KEY de SerAPI: ")
     set_key(".env", "API_KEY_SERPAPI", api_key)
 
-def main(query, configure_env, start_page, pages, lang):
+def main(query, configure_env, start_page, pages, lang, output_json, output_html):
     # Comprobamos si existe el fichero .env
     env_exist = os.path.exists(".env")
     if not env_exist or configure_env:
@@ -36,7 +37,16 @@ def main(query, configure_env, start_page, pages, lang):
                              lang=lang)
 
 
-    print(results)
+    rparser = ResultsParser(results)
+    # Mostrar por console
+
+    rparser.screen_show()
+
+    if output_html:
+        rparser.html_export(output_html)
+
+    if output_json:
+        rparser.json_export(output_json)
 
 if __name__ == "__main__":
     # Configuracion de los argumentos del programa
@@ -51,9 +61,15 @@ if __name__ == "__main__":
                         help="Numero de paginas de resultados de busqueda.")
     parser.add_argument("--lang", type=str, default="lang_es",
                         help="Codigo de idioma para los resultados de busqueda. Por defecto es 'lang_es'")
+    parser.add_argument("--json", type=str,
+                        help="Exporta los resultados en formato JSON en el fichero especificado")
+    parser.add_argument("--html", type=str,
+                        help="Exporta los resultados en formato HTML en el fichero especificado")
     args = parser.parse_args()
     main(query=args.query,
          configure_env=args.configure,
          pages=args.pages,
          start_page=args.start_page,
-         lang=args.lang)
+         lang=args.lang,
+         output_json=args.json,
+         output_html=args.html)
