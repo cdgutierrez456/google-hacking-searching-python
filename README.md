@@ -20,10 +20,12 @@ Ejemplos de operadores:
 
 ```
 01-hacking-searching/
-├── googlesearch.py     # Clase wrapper sobre la API de SerpAPI
-├── ninjadorks.py       # Script principal: ejecuta búsquedas con dorks
-├── requirements.txt    # Dependencias del proyecto
-└── .env                # Variables de entorno (no subir al repo)
+├── googlesearch.py      # Clase wrapper sobre la API de SerpAPI
+├── ninjadorks.py        # Script principal con CLI: ejecuta búsquedas con dorks
+├── results_parser.py    # Clase para mostrar y exportar resultados (tabla, JSON, HTML)
+├── html_template.html   # Plantilla HTML para el reporte de resultados
+├── requirements.txt     # Dependencias del proyecto
+└── .env                 # Variables de entorno (no subir al repo)
 ```
 
 ---
@@ -43,7 +45,13 @@ pip install -r requirements.txt
 
 ## Configuración
 
-Crea un archivo `.env` en la raíz del proyecto con tu clave de SerpAPI:
+Al ejecutar el script por primera vez (sin `.env`) o usando el flag `-c`, se iniciará un asistente interactivo que pedirá la API key y creará el archivo `.env` automáticamente:
+
+```bash
+python ninjadorks.py -c
+```
+
+También puedes crear el archivo `.env` manualmente:
 
 ```env
 API_KEY_SERPAPI=tu_clave_aqui
@@ -53,7 +61,45 @@ API_KEY_SERPAPI=tu_clave_aqui
 
 ## Uso
 
-### Clase `GoogleSearch` (googlesearch.py)
+### Uso básico
+
+```bash
+python ninjadorks.py -q 'filetype:sql "MySQL dump" (pass|password|passwd|pwd)'
+```
+
+### Argumentos disponibles
+
+| Argumento        | Descripción                                                        |
+|------------------|--------------------------------------------------------------------|
+| `-q`, `--query`  | Dork o consulta a buscar                                           |
+| `-c`, `--configure` | Inicia la configuración interactiva del archivo `.env`          |
+| `--start-page`   | Página de inicio de resultados (default: `1`)                      |
+| `--pages`        | Número de páginas de resultados a recuperar (default: `1`)         |
+| `--lang`         | Código de idioma para los resultados (default: `lang_es`)          |
+| `--json`         | Exporta los resultados a un archivo JSON con el nombre indicado    |
+| `--html`         | Exporta los resultados a un archivo HTML con el nombre indicado    |
+
+### Ejemplos
+
+```bash
+# Búsqueda simple
+python ninjadorks.py -q 'inurl:login admin'
+
+# 3 páginas de resultados en inglés
+python ninjadorks.py -q 'filetype:pdf confidential' --pages 3 --lang lang_en
+
+# Exportar a JSON y HTML
+python ninjadorks.py -q 'site:ejemplo.com inurl:admin' --json resultados.json --html reporte.html
+
+# Empezar desde la página 2
+python ninjadorks.py -q 'intitle:"index of" passwd' --start-page 2 --pages 2
+```
+
+---
+
+## Módulos
+
+### `GoogleSearch` (googlesearch.py)
 
 Wrapper que conecta con SerpAPI y permite paginar resultados.
 
@@ -78,22 +124,7 @@ Cada resultado devuelto es un diccionario con:
 }
 ```
 
-### Script `ninjadorks.py`
-
-Ejecuta un dork de ejemplo que busca volcados de bases de datos MySQL expuestos públicamente:
-
-```bash
-python ninjadorks.py
-```
-
-El dork utilizado es:
-```
-filetype:sql "MySQL dump" (pass|password|passwd|pwd)
-```
-
----
-
-## Parámetros de `search()`
+#### Parámetros de `search()`
 
 | Parámetro    | Tipo  | Default      | Descripción                                      |
 |--------------|-------|--------------|--------------------------------------------------|
@@ -101,6 +132,18 @@ filetype:sql "MySQL dump" (pass|password|passwd|pwd)
 | `start_page` | int   | `1`          | Página inicial de resultados                     |
 | `pages`      | int   | `1`          | Cantidad de páginas a recuperar                  |
 | `lang`       | str   | `'lang_es'`  | Idioma de los resultados (`lang_es`, `lang_en`…) |
+
+---
+
+### `ResultsParser` (results_parser.py)
+
+Clase encargada de mostrar y exportar los resultados de búsqueda.
+
+| Método                    | Descripción                                         |
+|---------------------------|-----------------------------------------------------|
+| `screen_show()`           | Muestra los resultados en una tabla en la terminal  |
+| `json_export(filename)`   | Exporta los resultados a un archivo JSON            |
+| `html_export(filename)`   | Exporta los resultados a un archivo HTML estilizado |
 
 ---
 
