@@ -1,5 +1,6 @@
 from dotenv import load_dotenv, set_key
 from results_parser import ResultsParser
+from file_downloader import FileDownloader
 import argparse
 import sys
 import os
@@ -11,7 +12,7 @@ def env_config():
     api_key = input("Introduce tu API_KEY de SerAPI: ")
     set_key(".env", "API_KEY_SERPAPI", api_key)
 
-def main(query, configure_env, start_page, pages, lang, output_json, output_html):
+def main(query, configure_env, start_page, pages, lang, output_json, output_html, download):
     # Comprobamos si existe el fichero .env
     env_exist = os.path.exists(".env")
     if not env_exist or configure_env:
@@ -48,6 +49,14 @@ def main(query, configure_env, start_page, pages, lang, output_json, output_html
     if output_json:
         rparser.json_export(output_json)
 
+    if download:
+        # Separar las extensiones de los archivos en un alista
+        file_types = download.split(',')
+        # Nos quedamos con las urls de los resultados obtenidos
+        urls = [result['link'] for result in results]
+        fdownloader = FileDownloader('downloads')
+        fdownloader.download_file_filter(urls, file_types)
+
 if __name__ == "__main__":
     # Configuracion de los argumentos del programa
     parser = argparse.ArgumentParser(description="Esta herramienta premite realizar Hacking con buscadores de manera automatica.")
@@ -65,6 +74,8 @@ if __name__ == "__main__":
                         help="Exporta los resultados en formato JSON en el fichero especificado")
     parser.add_argument("--html", type=str,
                         help="Exporta los resultados en formato HTML en el fichero especificado")
+    parser.add_argument("--download", type=str,
+                        help="Especifica las extensiones de los archivos que quieres descargar separadas entre coma. Ej. --download 'pdf, sql, csv'")
     args = parser.parse_args()
     main(query=args.query,
          configure_env=args.configure,
@@ -72,4 +83,5 @@ if __name__ == "__main__":
          start_page=args.start_page,
          lang=args.lang,
          output_json=args.json,
-         output_html=args.html)
+         output_html=args.html,
+         download=args.download)
