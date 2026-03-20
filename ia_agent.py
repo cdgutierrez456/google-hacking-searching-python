@@ -1,15 +1,44 @@
 from gpt4all import GPT4All
+from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class GPTAllGenerator:
+    def __init__(self, model_name='orca-mini-3b-gguf2-q4_0.gguf'):
+        self.model = GPT4All(model_name)
+
+    def generate(self, prompt):
+        return self.model.generate(prompt)
+
+class OpenAIGenerator:
+    def __init__(self, model_name="gpt-4o"):
+        self.model_name = model_name
+        self.client = OpenAI()
+
+    def generate(self, prompt):
+        completion = self.client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                },
+
+            ],
+        )
+        return completion.choices[0].message.content
 
 class IAAgent:
 
-    def __init__(self, model='orca-mini-3b-gguf2-q4_0.gguf'):
-        self.model = GPT4All(model)
+    def __init__(self, generator):
+        self.generator = generator
 
     def generate_gdork(self, description):
         # Construimos el prompt
         prompt = self._build_prompt(description)
         try:
-            output = self.model.generate(prompt)
+            output = self.generator.generate(prompt)
             return output
         except Exception as e:
             print(f"Error al generar el Google Dork: {e}")
@@ -34,9 +63,8 @@ class IAAgent:
         """
 
 if __name__ == "__main__":
-    description = 'Listado de usuarios y contrasenias en el contenido de ficheros de texto.'
-    ia_agent = IAAgent()
-    print(ia_agent.generate_gdork(description))
-
-# with model.chat_session():
-#     print(model.generate("How can I run LLMs efficiently on my laptop?", max_tokens=1024))
+    description = 'Listado de usuarios y contrasenias en el contenido de ficheros de texto. Utiliza variaciones de la palabra password (passwd, pwd...)'
+    openai_generator = OpenAIGenerator()
+    ia_agent = IAAgent(openai_generator)
+    result = ia_agent.generate_gdork(description)
+    print(result)
