@@ -23,6 +23,8 @@ Ejemplos de operadores:
 ├── googlesearch.py      # Clase wrapper sobre la API de SerpAPI
 ├── ninjadorks.py        # Script principal con CLI: ejecuta búsquedas con dorks
 ├── results_parser.py    # Clase para mostrar y exportar resultados (tabla, JSON, HTML)
+├── file_downloader.py   # Clase para descargar archivos encontrados en los resultados
+├── ia_agent.py          # Agente IA local (GPT4All) para generar dorks desde lenguaje natural
 ├── html_template.html   # Plantilla HTML para el reporte de resultados
 ├── requirements.txt     # Dependencias del proyecto
 └── .env                 # Variables de entorno (no subir al repo)
@@ -34,6 +36,7 @@ Ejemplos de operadores:
 
 - Python 3.x
 - Cuenta en [SerpAPI](https://serpapi.com/) para obtener una API key
+- (Opcional) [GPT4All](https://gpt4all.io/) para usar el agente IA local
 
 ### Instalar dependencias
 
@@ -78,6 +81,7 @@ python ninjadorks.py -q 'filetype:sql "MySQL dump" (pass|password|passwd|pwd)'
 | `--lang`         | Código de idioma para los resultados (default: `lang_es`)          |
 | `--json`         | Exporta los resultados a un archivo JSON con el nombre indicado    |
 | `--html`         | Exporta los resultados a un archivo HTML con el nombre indicado    |
+| `--download`     | Descarga archivos de los resultados según extensión (ej: `pdf,sql,csv`) |
 
 ### Ejemplos
 
@@ -93,6 +97,12 @@ python ninjadorks.py -q 'site:ejemplo.com inurl:admin' --json resultados.json --
 
 # Empezar desde la página 2
 python ninjadorks.py -q 'intitle:"index of" passwd' --start-page 2 --pages 2
+
+# Descargar archivos PDF encontrados en los resultados
+python ninjadorks.py -q 'filetype:pdf confidential' --download pdf
+
+# Descargar múltiples tipos de archivo
+python ninjadorks.py -q 'site:ejemplo.com' --download 'pdf,sql,csv'
 ```
 
 ---
@@ -135,6 +145,31 @@ Cada resultado devuelto es un diccionario con:
 
 ---
 
+### `FileDownloader` (file_downloader.py)
+
+Clase para descargar automáticamente archivos encontrados en los resultados de búsqueda.
+
+```python
+from file_downloader import FileDownloader
+
+fd = FileDownloader('downloads')  # directorio de destino
+
+# Descargar todos los archivos de una lista de URLs
+fd.download_file_filter(urls)
+
+# Filtrar por extensión antes de descargar
+fd.download_file_filter(urls, file_types=['pdf', 'sql'])
+```
+
+| Método                                  | Descripción                                               |
+|-----------------------------------------|-----------------------------------------------------------|
+| `file_download(url)`                    | Descarga un archivo individual desde una URL              |
+| `download_file_filter(urls, file_types)` | Descarga URLs, filtrando opcionalmente por extensión      |
+
+Los archivos se guardan en el directorio `downloads/` (se crea automáticamente si no existe).
+
+---
+
 ### `ResultsParser` (results_parser.py)
 
 Clase encargada de mostrar y exportar los resultados de búsqueda.
@@ -144,6 +179,28 @@ Clase encargada de mostrar y exportar los resultados de búsqueda.
 | `screen_show()`           | Muestra los resultados en una tabla en la terminal  |
 | `json_export(filename)`   | Exporta los resultados a un archivo JSON            |
 | `html_export(filename)`   | Exporta los resultados a un archivo HTML estilizado |
+
+---
+
+### `IAAgent` (ia_agent.py)
+
+Agente de inteligencia artificial local que usa **GPT4All** para generar Google Dorks a partir de una descripción en lenguaje natural. No requiere conexión a internet ni API key externa.
+
+```python
+from ia_agent import IAAgent
+
+agent = IAAgent()  # carga el modelo orca-mini-3b por defecto
+
+dork = agent.generate_gdork("Listado de usuarios y contraseñas en ficheros de texto")
+print(dork)
+# filetype:txt "username" "password"
+```
+
+| Parámetro | Tipo | Default | Descripción |
+|-----------|------|---------|-------------|
+| `model`   | str  | `'orca-mini-3b-gguf2-q4_0.gguf'` | Modelo GPT4All a usar |
+
+El modelo debe estar descargado previamente en el directorio de modelos de GPT4All. Puedes cambiarlo al instanciar la clase.
 
 ---
 
