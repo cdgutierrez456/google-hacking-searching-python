@@ -24,7 +24,8 @@ Ejemplos de operadores:
 ├── ninjadorks.py        # Script principal con CLI: ejecuta búsquedas con dorks
 ├── results_parser.py    # Clase para mostrar y exportar resultados (tabla, JSON, HTML)
 ├── file_downloader.py   # Clase para descargar archivos encontrados en los resultados
-├── ia_agent.py          # Agente IA local (GPT4All) para generar dorks desde lenguaje natural
+├── ia_agent.py          # Generadores IA (GPT4All y OpenAI) + agente para generar dorks
+├── smart_search.py      # Clase para buscar información en ficheros locales con regex
 ├── html_template.html   # Plantilla HTML para el reporte de resultados
 ├── requirements.txt     # Dependencias del proyecto
 └── .env                 # Variables de entorno (no subir al repo)
@@ -37,6 +38,7 @@ Ejemplos de operadores:
 - Python 3.x
 - Cuenta en [SerpAPI](https://serpapi.com/) para obtener una API key
 - (Opcional) [GPT4All](https://gpt4all.io/) para usar el agente IA local
+- (Opcional) Cuenta en [OpenAI](https://platform.openai.com/) para usar GPT-4o como generador de dorks
 
 ### Instalar dependencias
 
@@ -58,6 +60,7 @@ También puedes crear el archivo `.env` manualmente:
 
 ```env
 API_KEY_SERPAPI=tu_clave_aqui
+OPENAI_API_KEY=tu_clave_openai  # opcional, solo si usas el generador OpenAI
 ```
 
 ---
@@ -82,6 +85,7 @@ python ninjadorks.py -q 'filetype:sql "MySQL dump" (pass|password|passwd|pwd)'
 | `--json`         | Exporta los resultados a un archivo JSON con el nombre indicado    |
 | `--html`         | Exporta los resultados a un archivo HTML con el nombre indicado    |
 | `--download`     | Descarga archivos de los resultados según extensión (ej: `pdf,sql,csv`) |
+| `-gd`, `--generate-dork` | Genera un dork a partir de una descripción en lenguaje natural (usa IA) |
 
 ### Ejemplos
 
@@ -103,6 +107,9 @@ python ninjadorks.py -q 'filetype:pdf confidential' --download pdf
 
 # Descargar múltiples tipos de archivo
 python ninjadorks.py -q 'site:ejemplo.com' --download 'pdf,sql,csv'
+
+# Generar un dork con IA (te preguntará si usar OpenAI o GPT4All local)
+python ninjadorks.py -gd 'Listado de usuarios y contraseñas en ficheros de texto'
 ```
 
 ---
@@ -182,25 +189,84 @@ Clase encargada de mostrar y exportar los resultados de búsqueda.
 
 ---
 
-### `IAAgent` (ia_agent.py)
+### `IAAgent` + generadores (ia_agent.py)
 
-Agente de inteligencia artificial local que usa **GPT4All** para generar Google Dorks a partir de una descripción en lenguaje natural. No requiere conexión a internet ni API key externa.
+Módulo de generación de Google Dorks con IA mediante patrón estrategia. Permite elegir entre un modelo local (GPT4All) o un modelo en la nube (OpenAI GPT-4o).
+
+#### `GPTAllGenerator` — modelo local
+
+No requiere conexión a internet ni API key. El modelo debe estar descargado previamente en el directorio de modelos de GPT4All.
 
 ```python
-from ia_agent import IAAgent
+from ia_agent import GPTAllGenerator, IAAgent
 
-agent = IAAgent()  # carga el modelo orca-mini-3b por defecto
+generator = GPTAllGenerator()  # usa orca-mini-3b por defecto
+agent = IAAgent(generator)
 
 dork = agent.generate_gdork("Listado de usuarios y contraseñas en ficheros de texto")
 print(dork)
 # filetype:txt "username" "password"
 ```
 
-| Parámetro | Tipo | Default | Descripción |
-|-----------|------|---------|-------------|
-| `model`   | str  | `'orca-mini-3b-gguf2-q4_0.gguf'` | Modelo GPT4All a usar |
+| Parámetro    | Tipo | Default                          | Descripción           |
+|--------------|------|----------------------------------|-----------------------|
+| `model_name` | str  | `'orca-mini-3b-gguf2-q4_0.gguf'` | Modelo GPT4All a usar |
 
-El modelo debe estar descargado previamente en el directorio de modelos de GPT4All. Puedes cambiarlo al instanciar la clase.
+#### `OpenAIGenerator` — modelo en la nube
+
+Requiere `OPENAI_API_KEY` en el archivo `.env`. Usa el modelo `gpt-4o` por defecto.
+
+```python
+from ia_agent import OpenAIGenerator, IAAgent
+
+generator = OpenAIGenerator()
+agent = IAAgent(generator)
+
+dork = agent.generate_gdork("Páginas de login expuestas en subdominios de empresas")
+print(dork)
+```
+
+| Parámetro    | Tipo | Default    | Descripción          |
+|--------------|------|------------|----------------------|
+| `model_name` | str  | `'gpt-4o'` | Modelo OpenAI a usar |
+
+#### `IAAgent`
+
+Clase agnóstica al generador. Recibe cualquier generador y construye el prompt para generar el dork.
+
+```python
+agent = IAAgent(generator)
+dork = agent.generate_gdork("descripción en lenguaje natural")
+```
+
+---
+
+### `SmartSearch` (smart_search.py)
+
+Herramienta para buscar información en ficheros de texto de un directorio local usando **expresiones regulares**. Útil para analizar volcados de datos o logs obtenidos en una fase de reconocimiento.
+
+```python
+from smart_search import SmartSearch
+
+searcher = SmartSearch('/ruta/al/directorio')
+results = searcher.regex_search(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+')
+
+for file, matches in results.items():
+    print(file, matches)
+```
+
+Antes de procesar cada fichero, el script pregunta interactivamente si se desea incluirlo (mostrando su tamaño en caracteres).
+
+#### Uso desde la CLI
+
+```bash
+python smart_search.py /ruta/al/directorio -r 'expresion_regular'
+```
+
+| Argumento        | Descripción                                      |
+|------------------|--------------------------------------------------|
+| `dir_path`       | Ruta al directorio con los ficheros a analizar   |
+| `-r`, `--regex`  | Expresión regular para realizar la búsqueda      |
 
 ---
 
