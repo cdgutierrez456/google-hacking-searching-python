@@ -24,7 +24,6 @@ class OpenAIGenerator:
                     "role": "user",
                     "content": prompt
                 },
-
             ],
         )
         return completion.choices[0].message.content
@@ -61,10 +60,3 @@ class IAAgent:
 
         Descripción: {description}.
         """
-
-if __name__ == "__main__":
-    description = 'Listado de usuarios y contrasenias en el contenido de ficheros de texto. Utiliza variaciones de la palabra password (passwd, pwd...)'
-    openai_generator = OpenAIGenerator()
-    ia_agent = IAAgent(openai_generator)
-    result = ia_agent.generate_gdork(description)
-    print(result)
